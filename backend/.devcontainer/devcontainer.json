@@ -1,0 +1,11 @@
+{
+  "name": "Backend",
+  "dockerComposeFile": "../../compose.dev.yaml",
+  "service": "backend",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go"]
+    }
+  }
+}

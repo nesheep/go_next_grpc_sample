@@ -1,0 +1,15 @@
+services:
+  backend:
+    container_name: go_next_grpc_sample-backend-prod
+    image: go_next_grpc_sample-backend-prod
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+  frontend:
+    container_name: go_next_grpc_sample-frontend-prod
+    image: go_next_grpc_sample-frontend-prod
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:3000"
