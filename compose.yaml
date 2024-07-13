@@ -5,6 +5,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: demo
+      DB_PASSWORD: password
+      DB_DATABASE: demo
+    depends_on:
+      db:
+        condition: service_healthy
   frontend:
     container_name: go_next_grpc_sample-frontend-prod
     image: go_next_grpc_sample-frontend-prod
@@ -13,3 +22,25 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:3000"
+    depends_on:
+      - backend
+  db:
+    container_name: go_next_grpc_sample-db-dev
+    image: mysql:8.0.38
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: demo
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD"
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+volumes:
+  db-data:

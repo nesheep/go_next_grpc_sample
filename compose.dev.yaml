@@ -5,6 +5,12 @@ services:
     build:
       context: ./backend
       dockerfile: .devcontainer/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: demo
+      DB_PASSWORD: password
+      DB_DATABASE: demo
     volumes:
       - ./backend:/app
       - ./proto:/proto
@@ -21,3 +27,20 @@ services:
       - ./proto:/proto
     stdin_open: true
     tty: true
+  db:
+    container_name: go_next_grpc_sample-db-dev
+    image: mysql:8.0.38
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: demo
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    stdin_open: true
+    tty: true
+
+volumes:
+  db-data:

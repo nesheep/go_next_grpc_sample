@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -11,10 +10,22 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	hellopb "mygrpc/pkg/grpc"
+	"mygrpc/database"
+	"mygrpc/gen/pb"
+	"mygrpc/greeting"
+	"mygrpc/todo"
 )
 
 func main() {
+	db, err := database.NewDB()
+	if err != nil {
+		panic(err)
+	}
+
+	if err := database.InitDB(db); err != nil {
+		panic(err)
+	}
+
 	port := 8080
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
@@ -22,8 +33,10 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	hellopb.RegisterGreetingServiceServer(s, NewMyServer())
 	reflection.Register(s)
+
+	pb.RegisterGreetingServiceServer(s, greeting.NewServer())
+	pb.RegisterTodoServiceServer(s, todo.NewServer(db))
 
 	go func() {
 		log.Printf("start gRPC server port: %v", port)
@@ -35,19 +48,4 @@ func main() {
 	<-quit
 	log.Println("stopping gRPC server...")
 	s.GracefulStop()
-}
-
-type myServer struct {
-	hellopb.UnimplementedGreetingServiceServer
-}
-
-func NewMyServer() *myServer {
-	return &myServer{}
-}
-
-func (s *myServer) Hello(ctx context.Context, req *hellopb.HelloRequest) (*hellopb.HelloResponse, error) {
-	log.Printf("request received: %v", req.GetName())
-	return &hellopb.HelloResponse{
-		Message: fmt.Sprintf("Hello, %s!", req.GetName()),
-	}, nil
 }

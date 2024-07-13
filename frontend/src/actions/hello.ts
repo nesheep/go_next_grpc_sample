@@ -1,8 +1,8 @@
 "use server";
 
 import { credentials } from "@grpc/grpc-js";
-import { GreetingServiceClient } from "../_gen/grpc/hello_grpc_pb";
-import { HelloRequest } from "../_gen/grpc/hello_pb";
+import { GreetingServiceClient } from "@/gen/pb/hello_grpc_pb";
+import { HelloRequest } from "@/gen/pb/hello_pb";
 
 const client = new GreetingServiceClient(
   "backend:8080",
